@@ -9,3 +9,7 @@ attacks <- data_6v6 %>%
            attack_error) %>%
   summarise(attack_att = n()) %>%
   mutate(attack_eff = (attack_kill - attack_error) / attack_att)
+
+#remove coach
+attacks <- attacks[-c(9),]
+
