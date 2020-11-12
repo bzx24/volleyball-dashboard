@@ -1,7 +1,6 @@
 #import packages
 library(datavolley)
 library(lubridate)
-library(dplyr)
 library(tidyverse)
 
 #read in 6v6 data
@@ -27,21 +26,33 @@ attacks <- practice %>%
             blocked_error = sum(evaluation_code == "/"),
             attempts = n()) %>%
   arrange(date) %>%
-  mutate(kills_cum = cumsum(kill),
-         unforced_errors_cum = cumsum(unforced_error),
-         blocked_errors_cum = cumsum(blocked_error),
-         attempts_cum = cumsum(attempts),
-         efficiency = round((kill - unforced_error - blocked_error)/attempts,3),
-         efficiency_cum = round((kills_cum - unforced_errors_cum - blocked_errors_cum)/attempts_cum, 3))
+  mutate(efficiency = round((kill - unforced_error - blocked_error)/attempts,3)) %>%
+  ungroup()
 
 #remove coach
-attacks <- subset(attacks, attacks$player_name != "unknown player")
+attacks <- subset(attacks, attacks$player_name != "unknown player" & attacks$attempts > 0)
 
-#make attack efficiency vs date plot
-ggplot(attacks,
-       aes(x=date,
-           y=efficiency_cum,
+#attack efficiency vs date plot
+attack_eff <- ggplot(attacks,
+       aes(x= date,
+           y= efficiency,
            group=player_name)) +
   labs(y= "Attack Efficiency", x = "Date") +
   geom_point(aes(color = player_name)) +
   geom_line(aes(color = player_name))
+plot(attack_eff) 
+abline(h = 0, col = "red")
+
+#create cumulative stats
+attacks_cum <- practice %>%
+  filter(skill == "Attack") %>%
+  group_by(player_name) %>%
+  summarise(kills = sum(evaluation_code == "#"),
+            unforced_errors = sum(evaluation_code == "="),
+            blocked_errors = sum(evaluation_code == "/"),
+            attempts = n()) %>%
+  mutate(efficiency = round((kills - unforced_errors - blocked_errors)/attempts, 3))
+
+#cumulative attack efficiency vs date plot
+ggplot(attacks, aes(x = player_name, y = efficiency_cum)) +
+  geom_bar(stat = "identity")
