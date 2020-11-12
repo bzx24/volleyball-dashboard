@@ -36,3 +36,12 @@ attacks <- practice %>%
 
 #remove coach
 attacks <- subset(attacks, attacks$player_name != "unknown player")
+
+#make attack efficiency vs date plot
+ggplot(attacks,
+       aes(x=date,
+           y=efficiency_cum,
+           group=player_name)) +
+  labs(y= "Attack Efficiency", x = "Date") +
+  geom_point(aes(color = player_name)) +
+  geom_line(aes(color = player_name))
