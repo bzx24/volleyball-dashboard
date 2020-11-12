@@ -39,8 +39,9 @@ attack_eff <- ggplot(attacks,
            group=player_name)) +
   labs(y= "Attack Efficiency", x = "Date") +
   geom_point(aes(color = player_name)) +
-  geom_line(aes(color = player_name))
-plot(attack_eff) 
+  geom_line(aes(color = player_name)) +
+  geom_hline(yintercept = 0, color = "red")
+plot(attack_eff)
 
 #create cumulative stats
 attacks_cum <- practice %>%
