@@ -1,3 +1,8 @@
+#import packages
+library(lubridate)
+library(dplyr)
+library(tidyverse)
+
 #create attack efficiency metric
 attacks <- data_6v6 %>%
   filter(skill == "Attack") %>%
