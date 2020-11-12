@@ -58,4 +58,6 @@ attacks_cum <- subset(attacks_cum, attacks_cum$player_name != "unknown player" &
 
 #cumulative attack efficiency vs date plot
 ggplot(attacks_cum, aes(x = player_name, y = efficiency)) +
-  geom_bar(stat = "identity")
+  labs(y = "Attack Efficiency", x = "Name") +
+  geom_bar(stat = "identity", fill = "steelblue")+
+  theme_minimal()
