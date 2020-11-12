@@ -41,7 +41,6 @@ attack_eff <- ggplot(attacks,
   geom_point(aes(color = player_name)) +
   geom_line(aes(color = player_name))
 plot(attack_eff) 
-abline(h = 0, col = "red")
 
 #create cumulative stats
 attacks_cum <- practice %>%
@@ -53,6 +52,9 @@ attacks_cum <- practice %>%
             attempts = n()) %>%
   mutate(efficiency = round((kills - unforced_errors - blocked_errors)/attempts, 3))
 
+#remove coach
+attacks_cum <- subset(attacks_cum, attacks_cum$player_name != "unknown player" & attacks_cum$attempts > 0)
+
 #cumulative attack efficiency vs date plot
-ggplot(attacks, aes(x = player_name, y = efficiency_cum)) +
+ggplot(attacks_cum, aes(x = player_name, y = efficiency)) +
   geom_bar(stat = "identity")
