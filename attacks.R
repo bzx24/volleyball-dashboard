@@ -19,17 +19,20 @@ for(i in 2:length(files)) {
 remove(hold, x, i, files)
 
 #create attack efficiency metric
-attacks <- data_6v6 %>%
+attacks <- practice %>%
   filter(skill == "Attack") %>%
-  group_by(player_name) %>%
-  mutate(attack_kill = sum(evaluation == "Winning attack"),
-         attack_error = sum(evaluation %in% c("Blocked", "Error"))) %>%
-  group_by(player_name,
-           attack_kill,
-           attack_error) %>%
-  summarise(attack_att = n()) %>%
-  mutate(attack_eff = (attack_kill - attack_error) / attack_att)
+  group_by(player_name, date) %>%
+  summarise(kill = sum(evaluation_code == "#"),
+            unforced_error = sum(evaluation_code == "="),
+            blocked_error = sum(evaluation_code == "/"),
+            attempts = n()) %>%
+  arrange(date) %>%
+  mutate(kills_cum = cumsum(kill),
+         unforced_errors_cum = cumsum(unforced_error),
+         blocked_errors_cum = cumsum(blocked_error),
+         attempts_cum = cumsum(attempts),
+         efficiency = round((kill - unforced_error - blocked_error)/attempts,3),
+         efficiency_cum = round((kills_cum - unforced_errors_cum - blocked_errors_cum)/attempts_cum, 3))
 
 #remove coach
-attacks <- attacks[-c(9),]
-
+attacks <- subset(attacks, attacks$player_name != "unknown player")
