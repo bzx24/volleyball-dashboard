@@ -1,7 +1,22 @@
 #import packages
+library(datavolley)
 library(lubridate)
 library(dplyr)
 library(tidyverse)
+
+#read in 6v6 data
+files <- list.files(path = "./data", pattern = "\\_6v6.dvw$")
+x <- read_dv(paste0("./data/", files[1]))
+practice <- x$plays
+practice$date <- as_date(x$meta$match$date)
+
+for(i in 2:length(files)) {
+    x <- read_dv(paste0("./data/", files[i]))
+    hold <- x$plays
+    hold$date <- as_date(x$meta$match$date)
+    practice <- rbind(practice,hold)
+  }
+remove(hold, x, i, files)
 
 #create attack efficiency metric
 attacks <- data_6v6 %>%
