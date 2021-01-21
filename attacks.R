@@ -1,16 +1,15 @@
-#import packages
 library(datavolley)
 library(lubridate)
 library(tidyverse)
 
 #read in 6v6 data
-files <- list.files(path = "./data", pattern = "\\_6v6.dvw$")
-x <- read_dv(paste0("./data/", files[1]))
+files <- list.files(path = "./Data", pattern = "\\_6v6.dvw$")
+x <- read_dv(paste0("./Data/", files[1]))
 practice <- x$plays
 practice$date <- as_date(x$meta$match$date)
 
 for(i in 2:length(files)) {
-    x <- read_dv(paste0("./data/", files[i]))
+    x <- read_dv(paste0("./Data/", files[i]))
     hold <- x$plays
     hold$date <- as_date(x$meta$match$date)
     practice <- rbind(practice,hold)
@@ -57,8 +56,9 @@ attacks_cum <- practice %>%
 attacks_cum <- subset(attacks_cum, attacks_cum$player_name != "unknown player" & attacks_cum$attempts > 0)
 
 #cumulative attack efficiency vs date plot
-attack_eff_cum <- ggplot(attacks_cum, aes(x = player_name, y = efficiency)) +
+attack_eff_cum <- ggplot(attacks_cum, aes(x = reorder(player_name, efficiency), y = efficiency)) +
   labs(y = "Attack Efficiency", x = "Name") +
-  geom_bar(stat = "identity", fill = "steelblue")+
-  theme_minimal()
+  geom_bar(stat = "identity", fill = "steelblue") +
+  theme_minimal() +
+  coord_flip()
 plot(attack_eff_cum)
