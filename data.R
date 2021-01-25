@@ -29,3 +29,17 @@ for(i in 2:length(files)) {
   serve_pass <- rbind(serve_pass,hold)
 }
 remove(hold, x, i, files)
+
+#read in all data
+files <- list.files(path = "./Data", pattern = ".dvw$")
+x <- read_dv(paste0("./Data/", files[1]))
+data <- x$plays
+data$date <- as_date(x$meta$match$date)
+
+for(i in 2:length(files)) {
+  x <- read_dv(paste0("./Data/", files[i]))
+  hold <- x$plays
+  hold$date <- as_date(x$meta$match$date)
+  data <- rbind(data,hold)
+}
+remove(hold, x, i, files)
